@@ -8,9 +8,9 @@ class SQL extends \PDO
     private $host,$port,$dbname,$user,$pass,$charset;
 
     const HOST="localhost";
-    const DB="my_fwk_db";
-    const USER="myFwkUser";
-    const PASS="myfwkMolon";
+    const DB="sphinx_demo";
+    const USER="sphinx";
+    const PASS="sspphhiinnxx001122";
 
     private static $db;
 
