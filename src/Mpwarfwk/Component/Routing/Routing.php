@@ -32,12 +32,7 @@ class Routing{
           }
 
           if(isset($uriArray[2])){
-                $action=$uriArray[2];
-                $elemJson=$elemJson."/".$action;
-          }
-
-          if(isset($uriArray[3])){
-                for($i=3;$i<count($uriArray);$i++)
+                for($i=2;$i<count($uriArray);$i++)
                 $params[]=$uriArray[$i];
           }
 
