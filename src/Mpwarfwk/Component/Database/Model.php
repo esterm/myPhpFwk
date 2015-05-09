@@ -3,7 +3,7 @@
 namespace Mpwarfwk\Component\Database;
 
 
-class SQL extends \PDO
+class Model extends \PDO
 {
     private $host,$port,$dbname,$user,$pass,$charset;
 
@@ -14,7 +14,7 @@ class SQL extends \PDO
 
     private static $db;
 
-    private $database;
+    protected $database;
 
  
     public function __construct() 
@@ -47,20 +47,64 @@ class SQL extends \PDO
     {
         $statement = $this->database->prepare("SELECT * FROM $table");
         $statement->execute();
-        return $statement->fetchAll();
+        $result = $statement->fetchAll();
+
+        return  $result;
     }
 
-    public function selectFromTable($query, $data = NULL) 
+    public function selectFromTable($columns, $table, $data = NULL)  
     {
+        $statement = $this->buildQuery($columns, $table, $data);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        
+        $this->cache->setKey($cacheKey, $result, 30);
+
+        return $result;
+    }
+
+    private function buildQuery($columns, $table, $data)
+    {
+        //It builds a query like for example: $query = "SELECT provincia FROM provincias WHERE id_provincia = :id";
+        
+        $query="SELECT ";
+
+      
+        for ($i=0; $i<count($columns); $i++) 
+        {
+           $query .= $columns[$i];
+
+           if ($i<count($columns)-1) {
+                 $query .= ", ";
+           } 
+        }
+        
+
+        $query .= " FROM ".$table;
+
+        if($data != NULL)
+        {
+            $query.=" WHERE ";
+
+            foreach ($data as $key => $actualValue) 
+            {
+                 $query .= $key ." = :". $key;
+            }
+        }
+
         $statement = $this->database->prepare($query);
-        if($data != NULL){
-            foreach ($data as $key => $actualValue) {
+
+        if($data != NULL)
+        {
+            foreach ($data as $key => $actualValue) 
+            {
                 $statement->bindValue(":$key", $actualValue);
             }
         }
-        $statement->execute();
-        return $statement->fetchAll();
+
+        return $statement;
     }
+
 
     public function insertInTable($query, $data) 
     {
