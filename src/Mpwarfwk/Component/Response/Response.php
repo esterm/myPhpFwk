@@ -145,7 +145,7 @@ class Response {
         $this->setBody($body);
         $this->setStatusCode($status);
         $this->setProtocolVersion('1.0');
-       
+        $this->sendHeaders();
     }
 
 
