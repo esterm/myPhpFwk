@@ -59,7 +59,12 @@ class CacheModel extends Model
         parent::insertInTable($query, $data);
     }
 
-    
+   public function selectFromTableLike($columns, $table, $data = NULL)  
+    {
+        return parent::selectFromTableLike($columns, $table, $data);  
+    }
+
+
     public function deleteFromTable($table, $id, $value) 
     {
        parent::deleteFromTable($table, $id, $value);

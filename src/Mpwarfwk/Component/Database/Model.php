@@ -61,7 +61,7 @@ class Model extends \PDO
         return $result;
     }
 
-    private function buildQuery($columns, $table, $data)
+    private function buildQuery($columns, $table, $data, $like=false)
     {
         //It builds a query like for example: $query = "SELECT provincia FROM provincias WHERE id_provincia = :id";
         
@@ -86,10 +86,15 @@ class Model extends \PDO
 
             foreach ($data as $key => $actualValue) 
             {
-                 $query .= $key ." = :". $key;
+                if (!$like){
+                    $query .= $key ." = :". $key;
+                }else{
+                    $query .= $key ." LIKE :". $key;
+                }
+                 
             }
         }
-
+  
         $statement = $this->database->prepare($query);
 
         if($data != NULL)
@@ -101,6 +106,18 @@ class Model extends \PDO
         }
 
         return $statement;
+    }
+
+
+
+    public function selectFromTableLike($columns, $table, $data = NULL)  
+    {
+
+        $statement = $this->buildQuery($columns, $table, $data, true);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        
+        return $result; 
     }
 
 
