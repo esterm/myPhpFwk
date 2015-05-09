@@ -47,7 +47,7 @@ class CacheModel extends Model
             return $this->cache-> getKey($cacheKey);
         }
       
-        $result=parent::selectFromTable($columns, $table, $data = null);
+        $result=parent::selectFromTable($columns, $table, $data);
         
         $this->cache->setKey($cacheKey, $result, 30);
 
