@@ -68,6 +68,6 @@ class CacheModel extends Model
     public function updateTable($query, $data) 
     {
         
-         parent::updateTable($query, $data) 
+         parent::updateTable($query, $data);
     }  
 }
