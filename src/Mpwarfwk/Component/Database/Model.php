@@ -58,8 +58,6 @@ class Model extends \PDO
         $statement->execute();
         $result = $statement->fetchAll();
         
-        $this->cache->setKey($cacheKey, $result, 30);
-
         return $result;
     }
 
