@@ -20,21 +20,85 @@ class CacheModel extends Model
     public function selectAllFromTable($table) 
     {
        
-        $key = "allfrom".$table;
-
-        
-        if ( $this->cache-> get($key))
+        $columns = array("*");
+        $table = "provincias";
+       
+        $cacheKey = $this->cache->createKey($columns, $table);
+       
+        if ( $this->cache-> getKey($cacheKey))
         {
-            return $this->cache-> get($key);
+            return $this->cache-> getKey($cacheKey);
         }
 
         $statement = $this->database->prepare("SELECT * FROM $table");
         $statement->execute();
         $result = $statement->fetchAll();
 
-        $this->cache->set($key, $result, 30);
+        $this->cache->setKey($cacheKey, $result, 30);
       
         return  $result;
+    }
+
+
+    public function selectFromTable($columns, $table, $data = null) 
+    {
+        $cacheKey = $this->cache->createKey($columns, $table, $data);
+
+        if ( $this->cache-> getKey($cacheKey))
+        {
+            return $this->cache-> getKey($cacheKey);
+        }
+
+        $statement = $this->buildQuery($columns, $table, $data);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        
+        $this->cache->setKey($cacheKey, $result, 30);
+
+        return $result;
+    }
+
+   
+    private function buildQuery($columns, $table, $data)
+    {
+        //It builds a query like for example: $query = "SELECT provincia FROM provincias WHERE id_provincia = :id";
+        
+        $query="SELECT ";
+
+      
+        for ($i=0; $i<count($columns); $i++) 
+        {
+           $query .= $columns[$i];
+
+           if ($i<count($columns)-1) {
+                 $query .= ", ";
+           } 
+        }
+        
+
+        $query .= " FROM ".$table;
+
+        if($data != NULL)
+        {
+            $query.=" WHERE ";
+
+            foreach ($data as $key => $actualValue) 
+            {
+                 $query .= $key ." = :". $key;
+            }
+        }
+
+        $statement = $this->database->prepare($query);
+
+        if($data != NULL)
+        {
+            foreach ($data as $key => $actualValue) 
+            {
+                $statement->bindValue(":$key", $actualValue);
+            }
+        }
+
+        return $statement;
     }
 
 
@@ -47,8 +111,7 @@ class CacheModel extends Model
             $statement->bindValue(":$key", $actualValue);
         }
 
-
-        $this->cache->delete("allfrom".$table);
+         $this->cache->dropAll();
 
         return $statement->execute();
     }
@@ -58,34 +121,23 @@ class CacheModel extends Model
     {
         $statement = $this->database->prepare("DELETE FROM $table WHERE $id = '$value' LIMIT 1");
 
-        $this->cache->delete("allfrom".$table);
+          $this->cache->dropAll();
 
         return $statement->execute();
     }
 
-
-
-   /* public function selectFromTable($query, $data = NULL) 
-    {
-        $statement = $this->database->prepare($query);
-        if($data != NULL){
-            foreach ($data as $key => $actualValue) {
-                $statement->bindValue(":$key", $actualValue);
-            }
-        }
-        $statement->execute();
-        return $statement->fetchAll();
-    }
-
-   
-  
     public function updateTable($query, $data) 
     {
         
         $statement = $this->database->prepare($query);
-        foreach ($data as $key => $actualValue) {
+
+        foreach ($data as $key => $actualValue) 
+        {
             $statement->bindValue(":$key", $actualValue);
         }
+
+        $this->cache->dropAll();
+
         return $statement->execute();
-    }  */
+    }  
 }

@@ -6,8 +6,8 @@ namespace Mpwarfwk\Component\Cache;
 class Cache 
 {
    
-    private static $cache;
-
+    private static $c;
+    private $cache;
  
     public function __construct() 
     {
@@ -17,32 +17,42 @@ class Cache
    
     private static function getCache()
     {
-        if (!self::$cache)
+        if (!self::$c)
         {
-          self::$cache = new Memcache();
-          self::$cache->addServer('localhost',11211);
+          self::$c = new \Memcache();
+          self::$c->addServer('localhost',11211);
 
           
         }
-        return self::$cache;
+        return self::$c;
     }
 
+    public function createKey($columns, $table, $data=null)
+    {
+        $key = $table."-".serialize($columns)."-".serialize($data);
 
-	public function get($key)
-	{
-		$value=$cache->get($key);
+        return $key;
+    }
 
-		return $value;
-	}
+    public function getKey($key)
+    {
+        $value=$this->cache->get($key);
 
-	public function set($key, $value, $ttl)
-	{
-		$cache->set($key,$value,$ttl);	
-	}
+        return $value;
+    }
 
-	public function delete($key) //si no lo llamo la cahce siempre va a estar disponible
-	{
-		$cache->delete($key);
-	}
+    public function setKey($key, $value, $ttl)
+    {
+        $this->cache->set($key,$value, MEMCACHE_COMPRESSED, $ttl);  
+    }
 
+    public function deleteKey($key) //si no lo llamo la cahce siempre va a estar disponible
+    {
+        $this->cache->delete($key);
+    }
+
+    public function dropAll() //si no lo llamo la cahce siempre va a estar disponible
+    {
+        $this->cache->flush();
+    }
 }
