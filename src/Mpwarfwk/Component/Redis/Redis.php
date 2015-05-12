@@ -27,32 +27,28 @@ class Redis
     }
 
     //ZSet is an ordered set of data
-    public function AddZSet($value, $key)
+    public function addElemZSet($zsetname,$value, $key)
     {
-        $this->client->zadd('predis:zset', $value, $key);
+        $this->client->zadd($zsetname, $value, $key);
     }
 
-
-    public function listAllZset()
+    //ZSet is an ordered set of data
+    public function incElemZSet($zsetname,$inc, $key)
     {
-        // === Sorted set iterator based on ZSCAN ===
-        //echo 'Scan codes and visits of `predis:zset`:';
-        
-        $zSetsArray=[];
-        foreach (new Iterator\SortedSetKey($this->client, 'predis:zset') as $code => $visits) {
-            //echo "$code [num. visits: $visits], ";
-             $zSetsArray[$code]= (int) $visits;
-
-        }
-
-        return $zSetsArray;
+        $this->client->zincrby($zsetname, $inc, $key) ;
     }
 
-    public function incZSet($incrementFloat, $key)
+    public function getValElemZSet($zsetname, $key)
     {
-        $this->client->zincrby("predis:zset", $incrementFloat, $key);
+        return  $res= $this->client->zscore($zsetname,$key);  
     }
 
+     //ZSet is an ordered set of data
+    public function getOrderedZset($num)
+    {
+        return $res= $this->client->zrange('codigos', 0, $num);
+    }
+    
     
     // Hash data type --------------------------------------------------------------------------
    
