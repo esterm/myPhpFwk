@@ -46,7 +46,7 @@ class Redis
      //ZSet is an ordered set of data
     public function getOrderedZset($setname, $num)
     {
-        return $res= $this->client->zrange($setname, 0, $num);
+        return $res= $this->client->zrevrange($setname, 0, $num);
     }
     
     
