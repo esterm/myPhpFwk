@@ -21,6 +21,12 @@ class Redis
 
     // Zset data type (ordered set of data) ----------------------------------------------------------
 
+
+    public function deleteAZSets($zsetname)
+    {
+        $this->client->del($zsetname);
+    }
+    
     public function deleteAllZSets()
     {
         $this->client->del('predis:zset');
