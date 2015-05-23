@@ -29,7 +29,7 @@ class Cache
 
     public function createKey($columns, $table, $data=null)
     {
-        $key = $table."-".serialize($columns)."-".serialize($data);
+        $key = $table."-".$columns."-".$data;
 
         return $key;
     }
