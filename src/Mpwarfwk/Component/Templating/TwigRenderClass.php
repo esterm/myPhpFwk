@@ -17,6 +17,7 @@ class TwigRenderClass {
 		$this->routetemplates=__DIR__."/../../../../../../../src/Templates";;
 		$this->loader = new \Twig_Loader_Filesystem( $this->routetemplates);
 		$this->view = new \Twig_Environment( $this->loader, array() );
+		$this->view->addExtension(new \Twig_Extension_Debug());
 	}	
 
 }
